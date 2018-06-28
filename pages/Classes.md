@@ -117,6 +117,8 @@ Tommy the Palomino moved 34m.
 
 # Public, private, and protected modifiers
 
+A class member can be marked with the `public`, `private` or `protected` modifier in order to control access to the member. The only exception is ECMAScript private class members (members of the form `#name`), which may not be used with an access modifier. ECMAScript private class members always follow the privacy rules defined by ECMAScript.
+
 ## Public by default
 
 In our examples, we've been able to freely access the members that we declared throughout our programs.
@@ -245,21 +247,32 @@ let howard = new Employee("Howard", "Sales");
 let john = new Person("John"); // Error: The 'Person' constructor is protected
 ```
 
+# ECMAScript private class members
+
+TypeScript supports ECMAScript private class members (of the form `#memberName`). The TypeScript compiler will enforce the rules of ECMAScript on these members without additional restrictions. Unlike TypeScript private members (members marked with the `private` keyword), a class may use an ECMAScript private class member with the same name as an ECMAScript private class member in a base class. This is consistent with the ECMAScript rules for private class members.
+
+TODO: Flesh this out. Describe the transformations.
+
 # Readonly modifier
 
 You can make properties readonly by using the `readonly` keyword.
 Readonly properties must be initialized at their declaration or in the constructor.
+ECMAScript private class fields may be marked `readonly`.
 
 ```ts
 class Octopus {
     readonly name: string;
     readonly numberOfLegs: number = 8;
-    constructor (theName: string) {
+    readonly #id: string;
+    readonly #type: string = "common";
+    constructor (theName: string, theId: string) {
         this.name = theName;
+        this.#id = theId;
     }
 }
 let dad = new Octopus("Man with the 8 strong legs");
 dad.name = "Man with the 3-piece suit"; // error! name is readonly.
+dad.#id = 42; // error! #id is private and read-only.
 ```
 
 ## Parameter properties
@@ -282,6 +295,16 @@ We've consolidated the declarations and assignment into one location.
 
 Parameter properties are declared by prefixing a constructor parameter with an accessibility modifier or `readonly`, or both.
 Using `private` for a parameter property declares and initializes a private member; likewise, the same is done for `public`, `protected`, and `readonly`.
+
+ECMAScript private class fields cannot be created via parameter properties.
+
+```ts
+class Octopus {
+    constructor(#name: string) { // error! ECMAScript private class fields cannot
+                                 //        be created with parameter properties
+    }
+}
+```
 
 # Accessors
 
@@ -338,6 +361,22 @@ if (employee.fullName) {
 
 To prove to ourselves that our accessor is now checking the passcode, we can modify the passcode and see that when it doesn't match we instead get the message warning us we don't have access to update the employee.
 
+Accessors may be used with ECMAScript private class properties.
+
+```ts
+class Employee {
+    #idValue: number;
+    
+    get #id() {
+        return this.#idValue;
+    }
+    
+    set #id(value) {
+        this.#idValue = value;
+    }
+}
+```
+
 A couple of things to note about accessors:
 
 First, accessors require you to set the compiler to output ECMAScript 5 or higher.
@@ -369,6 +408,26 @@ let grid2 = new Grid(5.0);  // 5x scale
 
 console.log(grid1.calculateDistanceFromOrigin({x: 10, y: 10}));
 console.log(grid2.calculateDistanceFromOrigin({x: 10, y: 10}));
+```
+
+Static ECMAScript private class members are allowed.
+
+```ts
+class Converter {
+    static readonly #LITERS_PER_GALLON = 3.78541;
+    
+    static #convert(value, factor) {
+        return value * factor;
+    }
+    
+    gallonsToLiters(gallons) {
+        return Converter.#convert(gallons, Converter.#LITERS_PER_GALLON);
+    }
+
+    litersToGallons(liters) {
+        return Converter.#convert(liters, 1 / Converter.#LITERS_PER_GALLON);
+    }
+}
 ```
 
 # Abstract Classes
