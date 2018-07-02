@@ -249,7 +249,25 @@ let john = new Person("John"); // Error: The 'Person' constructor is protected
 
 # ECMAScript private class members
 
-TypeScript supports ECMAScript private class members (of the form `#memberName`). The TypeScript compiler will enforce the rules of ECMAScript on these members without additional restrictions. Unlike TypeScript private members (members marked with the `private` keyword), a class may use an ECMAScript private class member with the same name as an ECMAScript private class member in a base class. This is consistent with the ECMAScript rules for private class members.
+TypeScript supports ECMAScript [private class members](https://github.com/tc39/proposal-class-fields#private-fields) (of the form `#memberName`). Private class members have "hard" privacy: their encapsulation cannot be broken, even at runtime.
+
+```ts
+class A {
+    #foo: string = "I am very private";
+}
+new A().#foo;  // Error
+```
+
+Private class members are somewhat similar to members with the `private` modifier, but have important differences.
+
+Use a private member (example: `#foo`) when:
+- You do not want anyone to be able to see the values of your fields with private names
+- Your APIs are consumed by users who have not yet converted to TypeScript and therefore are not prevented from accessing `private` fields.
+- You want to use your class as an interface (this is not allowed with the `private` modifier).
+
+Use the `private` modifier (example: `private foo`) when:
+- You want to be able to see the private field when you `console.log` or use a debugger.
+- You want to use private constructors, which are not yet supported for private names.
 
 # Readonly modifier
 
