@@ -296,16 +296,6 @@ We've consolidated the declarations and assignment into one location.
 Parameter properties are declared by prefixing a constructor parameter with an accessibility modifier or `readonly`, or both.
 Using `private` for a parameter property declares and initializes a private member; likewise, the same is done for `public`, `protected`, and `readonly`.
 
-ECMAScript private class fields cannot be created via parameter properties.
-
-```ts
-class Octopus {
-    constructor(#name: string) { // error! ECMAScript private class fields cannot
-                                 //        be created with parameter properties
-    }
-}
-```
-
 # Accessors
 
 TypeScript supports getters/setters as a way of intercepting accesses to a member of an object.
@@ -367,11 +357,11 @@ Accessors may be used with ECMAScript private class properties.
 class Employee {
     #idValue: number;
     
-    get #id() {
+    get #id(): number {
         return this.#idValue;
     }
     
-    set #id(value) {
+    set #id(value: number) {
         this.#idValue = value;
     }
 }
@@ -414,17 +404,17 @@ Static ECMAScript private class members are allowed.
 
 ```ts
 class Converter {
-    static readonly #LITERS_PER_GALLON = 3.78541;
+    static readonly #LITERS_PER_GALLON: number = 3.78541;
     
-    static #convert(value, factor) {
+    static #convert(value: number, factor: number): number {
         return value * factor;
     }
     
-    gallonsToLiters(gallons) {
+    gallonsToLiters(gallons: number): number {
         return Converter.#convert(gallons, Converter.#LITERS_PER_GALLON);
     }
 
-    litersToGallons(liters) {
+    litersToGallons(liters: number): number {
         return Converter.#convert(liters, 1 / Converter.#LITERS_PER_GALLON);
     }
 }
