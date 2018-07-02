@@ -251,8 +251,6 @@ let john = new Person("John"); // Error: The 'Person' constructor is protected
 
 TypeScript supports ECMAScript private class members (of the form `#memberName`). The TypeScript compiler will enforce the rules of ECMAScript on these members without additional restrictions. Unlike TypeScript private members (members marked with the `private` keyword), a class may use an ECMAScript private class member with the same name as an ECMAScript private class member in a base class. This is consistent with the ECMAScript rules for private class members.
 
-TODO: Flesh this out. Describe the transformations.
-
 # Readonly modifier
 
 You can make properties readonly by using the `readonly` keyword.
